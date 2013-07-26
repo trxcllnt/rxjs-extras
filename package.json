@@ -1,0 +1,27 @@
+{
+  "name": "rx-js-extras",
+  "version": "0.0.2",
+  "description": "Extra RxJS extension methods to make working with Observables easier.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/trxcllnt/rx-js-extras.git"
+  },
+  "keywords": [
+    "rx",
+    "rxjs",
+    "frp"
+  ],
+  "dependencies": {
+    "rx": "~2.1.5",
+    "underscore": "~1.5.1"
+  },
+  "author": "Paul Taylor <paul.e.taylor@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trxcllnt/rx-js-extras/issues"
+  }
+}
