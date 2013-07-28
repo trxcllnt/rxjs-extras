@@ -188,7 +188,7 @@ observableProto.selectProperty = function() {};
 // })
 // .invoke("bottomRight.call.y", {x: 10, width: 50, y: 15, height: 85}, [], 10)
 // .subscribe(function(bottom_with_offset) {
-//     console.log(bottom); // prints 110
+//     console.log(bottom_with_offset); // prints 110
 // })
 // 
 observableProto.invoke       =
