@@ -1,6 +1,6 @@
 {
   "name": "rx-js-extras",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Extra RxJS extension methods to make working with Observables easier.",
   "main": "lib/rx.extras.js",
   "scripts": {
