@@ -1,19 +1,24 @@
-var _  = require('lodash');
 var Rx = require('rx');
+var _  = require('lodash');
 
-var Rx = require('../node_modules/rx/rx.js');
-
-var observableProto = Rx.Observable.prototype;
-var subjectProto = Rx.Subject.prototype;
+var observableProto            = Rx.Observable.prototype;
+var subjectProto               = Rx.Subject.prototype;
+var behaviorSubjectProto       = Rx.BehaviorSubject.prototype;
+var replaySubjectProto         = Rx.ReplaySubject.prototype;
+var connectableObservableProto = Rx.Observable.empty().publish().constructor.prototype;
 
 function add_impl() {
 	
-	var list = _.toArray(arguments);
+	var list  = _.toArray(arguments);
 	var names = _.initial(list);
-	var impl = _.last(list);
+	var impl  = _.last(list);
 	
 	_.forEach(names, function(name) {
-		observableProto[name] = subjectProto[name] = impl;
+		observableProto[name] = 
+			subjectProto[name] = 
+			behaviorSubjectProto[name] = 
+			replaySubjectProto[name] = 
+			connectableObservableProto[name] = impl;
 	});
 };
 
@@ -564,14 +569,6 @@ add_impl('memoize',
 			return subscriptions;
 		});
 	});
-
-require('../node_modules/rx/rx.aggregates');
-require('../node_modules/rx/rx.binding');
-require('../node_modules/rx/rx.coincidence');
-require('../node_modules/rx/rx.experimental');
-require('../node_modules/rx/rx.joinpatterns');
-require('../node_modules/rx/rx.testing');
-require('../node_modules/rx/rx.time');
 
 module.exports = Rx;
 
