@@ -1,11 +1,7 @@
 var Rx = require('rx');
 var _  = require('lodash');
 
-var observableProto            = Rx.Observable.prototype;
-var subjectProto               = Rx.Subject.prototype;
-var behaviorSubjectProto       = Rx.BehaviorSubject.prototype;
-var replaySubjectProto         = Rx.ReplaySubject.prototype;
-var connectableObservableProto = Rx.Observable.empty().publish().constructor.prototype;
+var observableProto = Rx.Observable.prototype;
 
 function add_impl() {
 	
@@ -14,11 +10,7 @@ function add_impl() {
 	var impl  = _.last(list);
 	
 	_.forEach(names, function(name) {
-		observableProto[name] = 
-			subjectProto[name] = 
-			behaviorSubjectProto[name] = 
-			replaySubjectProto[name] = 
-			connectableObservableProto[name] = impl;
+		observableProto[name] = impl;
 	});
 };
 
@@ -45,7 +37,8 @@ add_impl(
 // 
 // Combine from both sources until the source Observable completes.
 // 
-add_impl('combineUntilFirst',
+add_impl(
+	'combineUntilFirst',
 	function(second, selector) {
 		return this
 			.combineLatest(second, selector)
@@ -55,7 +48,8 @@ add_impl('combineUntilFirst',
 // 
 // Combine from both sources until the second Observable completes.
 // 
-add_impl('combineUntilSecond',
+add_impl(
+	'combineUntilSecond',
 	function(second, selector) {
 		return this
 			.combineLatest(second, selector)
@@ -162,7 +156,8 @@ add_impl(
 // which means if a source value is an Array, the source Array's
 // values will be inserted into the emitted Array.
 // 
-add_impl('scanConcat',
+add_impl(
+	'scanConcat',
 	function() {
 		return this.scan([], function(list, items) {
 			return list.concat(items);
@@ -527,7 +522,6 @@ add_impl(
 var globalCache = {};
 function globalCacheSelector() { return globalCache; };
 
-
 // 
 // Memoizes an Observable sequence based on a key. New subscriptions for 
 // sequences that have already been subscribed to are replayed the events
@@ -537,7 +531,8 @@ function globalCacheSelector() { return globalCache; };
 // Also accepts an optional durationSelector, which supplies an Observable that
 // emits a value to invalidate the cache for the key.
 // 
-add_impl('memoize',
+add_impl(
+	'memoize',
 	function(keySelector, cacheSelector, durationSelector) {
 		
 		if(cacheSelector === void(0)) cacheSelector = globalCacheSelector;
@@ -550,7 +545,7 @@ add_impl('memoize',
 			var key = keySelector();
 			var cache = cacheSelector();
 			
-			if(cache.hasOwnProperty(key) === false) cache[key] = source.replay();
+			if(cache.hasOwnProperty(key) === false) cache[key] = source.replay().refCount();
 			
 			var subscriptions = new Rx.CompositeDisposable();
 			
@@ -569,6 +564,33 @@ add_impl('memoize',
 			return subscriptions;
 		});
 	});
+
+var cookieCache = {};
+function cookiesKeySelector() { return 'cookies'; };
+function cookiesCacheSelector() { return cookieCache; };
+
+Rx.Observable.cookies = function(durationSelector) {
+	
+	return Rx.Observable.createWithDisposable(function(observer) {
+		
+		var cookie = document.cookie;
+		var values = cookie.split(/;\s*/);
+		
+		return Rx.Observable
+			.fromArray(values)
+			.select(function(value) {
+				
+				var index = value.indexOf('=');
+				
+				return [
+					value.substring(0, index),
+					value.substring(index + 1)
+				]
+			})
+			.subscribe(observer);
+	})
+	.memoize(cookiesKeySelector, cookiesCacheSelector, durationSelector)
+}
 
 module.exports = Rx;
 
@@ -610,6 +632,8 @@ function chain(fields) {
 				if(typeof methodOrValue === 'function') {
 					
 					var args = args_list.shift();
+					
+					if(args === void(1)) args = [];
 					
 					return methodOrValue.apply(value, _.isArray(args) ? args : [args]);
 				}
