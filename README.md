@@ -210,10 +210,26 @@ observableProto.callProperty = function(methods) {};
 //         console.log(obj.coords.global.x); // prints 10
 //     });
 // 
+observableProto.whereEqual   =
 observableProto.whereEquals  =
-observableProto.whereFieldIs =
-observableProto.whereValueIs =
 observableProto.whereEqualTo = function(value_to_match) {};
+
+// 
+// Filters for source values whose fields *don't* match the specified value.
+// The first argument is the field to match against, remaining arguments are
+// treated as a field chain.
+// 
+// Example:
+// 
+// Rx.Observable
+//     .returnValue({ coords: { global: { x: 10 } } })
+//     .whereEqualTo(10, 'coords.global', 'x')
+//     .subscribe(function(obj) {
+//         console.log(obj.coords.global.x); // prints 10
+//     });
+// 
+observableProto.whereNot        =
+observableProto.whereNotEqualTo = function(value_to_not_match) {};
 
 // 
 // Filters for source values whose values at the field_or_method chain
@@ -224,6 +240,16 @@ observableProto.whereEqualTo = function(value_to_match) {};
 // 
 observableProto.whereInvoke       =
 observableProto.whereCallProperty = function(value_to_match, fields_or_methods) {};
+
+// 
+// Filters for source values whose values at the fields_or_method chain
+// *don't* match the specified value.
+// 
+// Additional arguments are treated as arguments for the methods in the chain.
+// See 'invoke' for more information on method chains.
+// 
+observableProto.whereInvokeNot       =
+observableProto.whereCallPropertyNot = function(value_to_not_match, fields_or_methods) {};
 
 // 
 // Filters for source values that are greater than (>) the specified value.

@@ -334,9 +334,8 @@ add_impl(
 //     });
 // 
 add_impl(
+	'whereEqual',
 	'whereEquals',
-	'whereFieldIs',
-	'whereValueIs',
 	'whereEqualTo',
 	function(value_to_match) {
 		return this.where(chain(_.tail(arguments))(function(final_value) {
@@ -345,7 +344,30 @@ add_impl(
 	});
 
 // 
-// Filters for source values whose values at the field_or_method chain
+// Filters for source values whose fields *don't* match the specified value.
+// The first argument is the field to match against, remaining arguments are
+// treated as a field chain.
+// 
+// Example:
+// 
+// Rx.Observable
+//     .returnValue({ coords: { global: { x: 10 } } })
+//     .whereEqualTo(10, 'coords.global', 'x')
+//     .subscribe(function(obj) {
+//         console.log(obj.coords.global.x); // prints 10
+//     });
+// 
+add_impl(
+	'whereNot',
+	'whereNotEqualTo',
+	function(value_to_not_match) {
+		return this.where(chain(_.tail(arguments))(function(final_value) {
+			return final_value !== value_to_not_match;
+		}));
+	});
+
+// 
+// Filters for source values whose values at the fields_or_method chain
 // match the specified value.
 // 
 // Additional arguments are treated as arguments for the methods in the chain.
@@ -357,6 +379,22 @@ add_impl(
 	function(value_to_match, fields_or_methods) {
 		return this.where(chain(fields_or_methods)(function(final_value){
 			return final_value === value_to_match;
+		}, _.tail(_.tail(arguments))));
+	});
+
+// 
+// Filters for source values whose values at the fields_or_method chain
+// *don't* match the specified value.
+// 
+// Additional arguments are treated as arguments for the methods in the chain.
+// See 'invoke' for more information on method chains.
+// 
+add_impl(
+	'whereInvokeNot',
+	'whereCallPropertyNot',
+	function(value_to_not_match, fields_or_methods) {
+		return this.where(chain(fields_or_methods)(function(final_value){
+			return final_value !== value_to_not_match;
 		}, _.tail(_.tail(arguments))));
 	});
 
