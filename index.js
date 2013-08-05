@@ -270,7 +270,7 @@ add_impl(
 	'selectValueAt',
 	'selectProperty',
 	function() {
-		return this.select(chain(arguments)(_.identity));
+		return this.select(chain(_.toArray(arguments))(_.identity));
 	});
 
 // Invokes the function chain for each source value.
@@ -650,7 +650,9 @@ function split(separator) {
 	}
 };
 
-function chain(fields) {
+function chain() {
+	
+	var fields;
 	
 	fields = _.flatten(_.toArray(arguments));
 	fields = _.flatten(_.map(fields, split('.')));
